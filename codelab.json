@@ -1,0 +1,29 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2023-10-24T23:14:10+02:00",
+  "id": "grub_1.2",
+  "duration": 22,
+  "title": "Guía arranque seguro GRUB",
+  "summary": "Guía de protección del GRUB",
+  "source": ".\\grub.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "grub",
+    "debian",
+    "markdown"
+  ],
+  "tags": [
+    "contraseñadearranque",
+    "copíadeseguridad",
+    "evitarediciónyaccesoaconsoladegrub.",
+    "introducción",
+    "ocultararranque"
+  ],
+  "url": "grub_1.2"
+}

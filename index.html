@@ -1,0 +1,122 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Guía arranque seguro GRUB</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/claat-public/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="grub_1.2"
+                  title="Guía arranque seguro GRUB"
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="Introducción" duration="2">
+        <p>En esta guía veremos una serie de configuraciones para asegurar el GRUB de una máquina Debian 12. El GRUB es un programa que instala un gestor de arranque en el MBR. Le permite insertar instrucciones específicas en el MBR.</p>
+<p class="image-container"><img alt="portada" src="img\\5a180b2c355bfe54.png"></p>
+<h2 is-upgraded>Referencias</h2>
+<ul>
+<li><a href="https://www.cambiadeso.es/entradas/todo-sobre-el-grub/" target="_blank">Todo sobre el GRUB</a></li>
+<li><a href="https://wiki.archlinux.org/title/GRUB_(Espa%C3%B1ol)/Tips_and_tricks_(Espa%C3%B1ol)#:~:text=class%20os%20...-,Ocultar%20GRUB%20y%20hacerlo%20aparecer%20mediante%20la%20tecla%20May%C3%BAs,fase%20de%20inicio%20de%20GRUB." target="_blank">Tips y tricks sobre GRUB en Español</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Copia de seguridad" duration="5">
+        <p>Las copias de seguridad es el primer paso que debemos realizar antes de hacer cualquier cambio en los ficheros referente a las configuraciones del GRUB.</p>
+<ol type="1">
+<li>Lo primero que debemos hacer es iniciar nuestra máquina Debian e ir al terminal de Debian para hacer una copia de seguridad de los ficheros necesarios para el GRUB. En mi caso he hecho la copia de seguridad en un USB y he iniciado la terminal desde el propio directorio donde voy a hacer las copias.</li>
+</ol>
+<p class="image-container"><img alt="terminal" src="img\\53637df2c4c8bc04.png"></p>
+<ol type="1" start="2">
+<li>Deberemos copiar el fichero grub que se encuentra en /etc/default/ con el comando cp y al directorio en el que nos encontramos.</li>
+</ol>
+<p class="image-container"><img alt="copia" src="img\\8ab40621fc023ed3.png"></p>
+<ol type="1" start="3">
+<li>Además de la copia anterior también copiaremos de manera recursiva todo el directorio que se encuentra en /etc/ llamado grub.d.</li>
+</ol>
+<p class="image-container"><img alt="copia_dir" src="img\\18873262414ced53.png"></p>
+<p>Con esto habremos copiado todos los ficheros que necesitamos copiar para esta sección.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Contraseña de arranque" duration="5">
+        <ol type="1">
+<li>Manteniendonos en el terminal de Debian, debemos poner el comando grub-mkpasswd-pbkdf2 que nos pedirá que indiquemos la contraseña que queremos colocar. Tras introducirla, nos aparecerá un hash sobre la contraseña que hemos colocado y deberemos copiarla para ponerla en un fichero específico.</li>
+</ol>
+<p class="image-container"><img alt="pass" src="img\\5cb4a96cf0b3eef1.png"></p>
+<ol type="1" start="2">
+<li>Ahora deberemos entrar con nano al fichero que se encuentra en /etc/grub.d/40_custom para copiar el hash que nos han dado anteriormente.</li>
+</ol>
+<p class="image-container"><img alt="nano" src="img\\e0dea2fb35fa7535.png"></p>
+<ol type="1" start="3">
+<li>Al final de este fichero introducimos set_superusers=&#34;root&#34; para indicar el usuario al que vamos a colocar esta contraseña. Justo debajo deberemos colocar password_pbkdf2 root y pegamos el hash que nos ha dado anteriormente. Guardamos y con esto habremos colocado una contraseña para el usuario root en el grub.</li>
+</ol>
+<p class="image-container"><img alt="40_custom" src="img\\3ca633ef6d008ecf.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Ocultar arranque" duration="5">
+        <p>En esta parte de la guía, explicaré como ocultar el grub para que no aparezca al iniciar nuestra máquina.</p>
+<ol type="1">
+<li>El primer paso es editar el fichero 30_os-prober que se encuentra en /etc/grub.d.</li>
+</ol>
+<p class="image-container"><img alt="30_os-prober" src="img\\9baeeb8c3ec4379b.png"></p>
+<ol type="1" start="2">
+<li>Deberemos comentar la entrada adjust_timeout para que no se cambie el fichero que deberemos editar al arrancar la máquina a través de este fichero ya que siempre que inicia la máquina, se cogerá de referencia para el timeout del grub este fichero.</li>
+</ol>
+<p class="image-container"><img alt="timeout" src="img\\7f0a9887d6df540f.png"></p>
+<ol type="1" start="3">
+<li>En el fichero grub.cfg que se encuentra en /boot/grub, deberemos cambiar en la entrada &#34;GRUB_TIMEOUT&#34; poniéndola a 0. También deberemos añadir la entrada GRUB_TIMEOUT_STYLE=&#34;hidden&#34; para asegurarnos de que el timeout también esté oculto.</li>
+</ol>
+<p class="image-container"><img alt="oculto" src="img\\db216a6d6f3fc05c.png"></p>
+<ol type="1" start="4">
+<li>Tras todas las configuraciones deberemos actualizar la BIOS con el comando sudo update-grub para que se efectue todos los cambios.</li>
+</ol>
+<p class="image-container"><img alt="update" src="img\\8a83120e35ff5d70.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Contraseña solo para opciones de edición y consola de GRUB" duration="5">
+        <ol type="1">
+<li>El primer paso es editar con nado el fichero /boot/grub/grub.cfg en el que deberemos escribir algunas opciones para que nos permita ocultarlo.</li>
+</ol>
+<p class="image-container"><img alt="grub.cfg" src="img\\78862ef306203f24.png"></p>
+<ol type="1" start="2">
+<li>Añadimos al fichero la opción –unrestricted delante de –class debian y con esto permitiremos a cualquier usuario arrancar la máquina pero evitaremos que cualquier usuario pueda editar las entradas y el acceso a la cosola de comandos del GRUB.</li>
+</ol>
+<p class="image-container"><img alt="unrestricted" src="img\\d17a3aa530c2f294.png"></p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/claat-public/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/prettify.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
